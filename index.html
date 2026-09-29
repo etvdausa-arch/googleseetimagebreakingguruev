@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Ultimate Dausa Live News - Overlay</title>
+<style>
+    :root {
+        --news-red: #cc0000;
+        --gold: #ffcc00;
+        --deep-black: #000000;
+        --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body { 
+        margin: 0; 
+        background: #000; 
+        font-family: 'Arial Black', sans-serif; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .main-container {
+        width: 1280px;
+        height: 720px;
+        max-width: 1280px;
+        max-height: 720px;
+        position: relative;
+        background: #000;
+        border: 4px solid #333;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; 
+    }
+
+    /* 🔥 TOP & BOTTOM BANNERS */
+    .top-bar-container, .bottom-bar-container {
+        width: 100%;
+        height: 130px;
+        flex-shrink: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        perspective: 1000px;
+        overflow: hidden; 
+    }
+
+    .top-bar-container { 
+        background: linear-gradient(135deg, #d32f2f, #900000, #ff1744); 
+        border-bottom: 10px solid var(--gold); 
+    }
+    
+    .bottom-bar-container { 
+        background: linear-gradient(135deg, #0d47a1, #002171, #2962ff); 
+        border-top: 10px solid var(--gold); 
+    }
+
+    .header-wrapper {
+        text-align: center;
+        width: 95%; 
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        font-size: 45px; 
+        font-weight: 900;
+        text-transform: uppercase;
+        white-space: nowrap; 
+    }
+
+    .top-bar-container .header-wrapper { 
+        transform: translateY(15px); 
+        color: #ffffff; 
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 255, 255, 0.5);
+    }
+    
+    .bottom-bar-container .header-wrapper { 
+        transform: translateY(-15px); 
+        color: var(--gold); 
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 204, 0, 0.8);
+    }
+
+    .word-anim {
+        display: inline-block;
+        animation-duration: 2.8s;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-out;
+        animation-fill-mode: both;
+    }
+
+    /* 🌟 TOP BAR ANIMATIONS */
+    .top-anim-1 { animation-name: slamTop; }
+    @keyframes slamTop {
+        0% { opacity: 0; transform: scale(2.2) rotateX(-90deg); }
+        20% { opacity: 1; transform: scale(1) rotateX(0deg); }
+        85% { opacity: 1; transform: scale(1); filter: brightness(1.2); }
+        100% { opacity: 0; transform: scale(0.6); }
+    }
+
+    .top-anim-2 { animation-name: slideDownTop; }
+    @keyframes slideDownTop {
+        0% { opacity: 0; transform: translateY(-80px) scale(0.7); }
+        20% { opacity: 1; transform: translateY(0) scale(1.05); }
+        30% { transform: translateY(0) scale(1); }
+        85% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: translateY(-50px) scale(0.8); }
+    }
+
+    .top-anim-3 { animation-name: zoomSpinTop; }
+    @keyframes zoomSpinTop {
+        0% { opacity: 0; transform: scale(0) rotate(-180deg); }
+        22% { opacity: 1; transform: scale(1.1) rotate(10deg); }
+        30% { transform: scale(1) rotate(0deg); }
+        85% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(1.5); }
+    }
+
+    .top-anim-4 { animation-name: elasticLeftTop; }
+    @keyframes elasticLeftTop {
+        0% { opacity: 0; transform: translateX(-120px) skewX(25deg); }
+        22% { opacity: 1; transform: translateX(0) skewX(-10deg); }
+        30% { transform: translateX(0) skewX(0deg); }
+        85% { opacity: 1; transform: translateX(0); }
+        100% { opacity: 0; transform: translateX(100px); }
+    }
+
+    /* 🌟 BOTTOM BAR ANIMATIONS */
+    .bot-anim-1 { animation-name: slideUpBot; }
+    @keyframes slideUpBot {
+        0% { opacity: 0; transform: translateY(80px) scale(0.7); }
+        20% { opacity: 1; transform: translateY(0) scale(1.05); }
+        30% { transform: translateY(0) scale(1); }
+        85% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: translateY(50px) scale(0.8); }
+    }
+
+    .bot-anim-2 { animation-name: flipYBot; }
+    @keyframes flipYBot {
+        0% { opacity: 0; transform: scale(1.8) rotateY(90deg); filter: blur(6px); }
+        22% { opacity: 1; transform: scale(1) rotateY(0deg); filter: blur(0); }
+        85% { opacity: 1; transform: scale(1); filter: brightness(1.2); }
+        100% { opacity: 0; transform: scale(0.5) rotateY(-90deg); }
+    }
+
+    .bot-anim-3 { animation-name: elasticRightBot; }
+    @keyframes elasticRightBot {
+        0% { opacity: 0; transform: translateX(120px) skewX(-25deg); }
+        22% { opacity: 1; transform: translateX(0) skewX(10deg); }
+        30% { transform: translateX(0) skewX(0deg); }
+        85% { opacity: 1; transform: translateX(0); }
+        100% { opacity: 0; transform: translateX(-100px); }
+    }
+
+    .bot-anim-4 { animation-name: popZoomBot; }
+    @keyframes popZoomBot {
+        0% { opacity: 0; transform: scale(0.2); }
+        22% { opacity: 1; transform: scale(1.15); }
+        30% { transform: scale(1); }
+        85% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(0); }
+    }
+
+    /* 📺 CENTER CONTENT AREA */
+    .content-area {
+        flex: 1; 
+        display: flex;
+        background: var(--gold);
+        border-left: 10px solid var(--white);
+        border-right: 10px solid var(--white);
+        width: 100%;
+        height: calc(720px - 260px);
+        overflow: hidden;
+    }
+
+    /* 🖼️ फोटो फ्रेम */
+    .photo-frame {
+        width: 400px;
+        height: 100%;
+        border-right: 10px solid var(--white); 
+        position: relative;
+        background: #000; 
+        overflow: hidden;
+        flex-shrink: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .base-logo {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; 
+        object-position: center; 
+        z-index: 1;
+    }
+
+    .photo-frame img.dynamic-news-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; 
+        object-position: center; 
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        transition: opacity 0.5s ease-in-out;
+        opacity: 0;
+    }
+
+    /* 📌 पक्का फोटो कैप्शन (Bottom Footer) बॉक्स */
+    .image-caption-box {
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        width: 100%;
+        min-height: 90px;
+        background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 60%, transparent 100%);
+        /* Display None डिफ़ॉल्ट रखा गया है ताकि खाली होने पर गायब रहे */
+        display: none; 
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 40px 10px 15px 10px;
+        z-index: 99999; /* Z-INDEX सर्वोच्च प्राथमिकता पर सेट है */
+        transition: opacity 0.4s ease-in-out;
+        opacity: 0; 
+    }
+
+    .caption-name {
+        color: #ffffff;
+        font-size: 30px; /* नाम का साइज स्पष्ट किया गया है */
+        font-weight: 900;
+        text-shadow: 2px 2px 5px #000000, 0 0 10px rgba(255,255,255,0.4);
+        margin: 0;
+        line-height: 1.1;
+        text-align: center;
+        text-transform: uppercase;
+        width: 100%;
+    }
+
+    .caption-post {
+        color: var(--gold);
+        font-size: 24px; /* पद का साइज स्पष्ट किया गया है */
+        font-weight: 700;
+        text-shadow: 2px 2px 5px #000000, 0 0 10px rgba(255, 204, 0, 0.4);
+        margin: 0;
+        line-height: 1.2;
+        text-align: center;
+        margin-top: 5px;
+        width: 100%;
+    }
+
+    /* 📝 टेक्स्ट एरिया */
+    .text-area {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0 15px;
+        overflow: hidden;
+        background: var(--gold);
+        position: relative;
+    }
+
+    #ticker {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .single-line-anim {
+        position: absolute;
+        width: 100%;
+        font-size: 82px; 
+        font-weight: 900;
+        line-height: 1.6; 
+        margin: 0;
+        color: var(--deep-black);
+        text-transform: uppercase;
+        text-align: center;
+        word-break: normal;
+        overflow-wrap: break-word;
+        padding: 30px 25px; 
+    }
+
+    .anim-style-1 { animation: style1Anim 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+    @keyframes style1Anim {
+        0% { transform: scale(0.4); opacity: 0; }
+        60% { transform: scale(1.06); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .anim-style-2 { animation: style2Anim 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    @keyframes style2Anim {
+        0% { transform: translateY(120px) scale(0.8); opacity: 0; }
+        100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .anim-style-3 { animation: style3Anim 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) forwards; }
+    @keyframes style3Anim {
+        0% { transform: rotateX(90deg) scale(0.6); opacity: 0; }
+        100% { transform: rotateX(0deg) scale(1); opacity: 1; }
+    }
+
+    .zoomOut { animation: zoomOutAnim 1s ease-in forwards !important; }
+    @keyframes zoomOutAnim { 
+        0% { transform: scale(1); opacity: 1; } 
+        100% { transform: scale(1.4); opacity: 0; } 
+    }
+</style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="top-bar-container">
+        <div id="dynamic-header" class="header-wrapper"></div>
+    </div>
+    
+    <div class="content-area">
+        <div class="photo-frame">
+            <img class="base-logo" src="image.jpg" alt="Permanent Base Image">
+            <img id="news-photo" class="dynamic-news-img" src="" alt="Dynamic News Image">
+            
+            <div id="image-caption-box" class="image-caption-box">
+                <div id="caption-name" class="caption-name"></div>
+                <div id="caption-post" class="caption-post"></div>
+            </div>
+        </div>
+
+        <div class="text-area" id="text-area-box">
+            <div id="ticker"></div>
+        </div>
+    </div>
+
+    <div class="bottom-bar-container">
+        <div id="dynamic-footer" class="header-wrapper"></div>
+    </div>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLgX7YQQ19ZVb2cEVltiN-D1iKeW9XLdlXi92u3cVBg3SBbWzjxQL2oS13VV9k7iyB/exec";
+
+let newsData = [];
+let newsIndex = 0;
+let slotTimeout; 
+
+const topAnims = ['top-anim-1', 'top-anim-2', 'top-anim-3', 'top-anim-4'];
+const botAnims = ['bot-anim-1', 'bot-anim-2', 'bot-anim-3', 'bot-anim-4'];
+
+async function fetchSheetData() {
+    try {
+        const cacheBusterUrl = SCRIPT_URL + "?t=" + new Date().getTime();
+        const response = await fetch(cacheBusterUrl);
+        const rawText = await response.text();
+        
+        try {
+            const data = JSON.parse(rawText);
+            if (Array.isArray(data) && data.length > 0) {
+                newsData = data;
+            } else if (data && data.data && Array.isArray(data.data)) {
+                newsData = data.data;
+            }
+        } catch (parseError) {
+            console.error("पार्सिंग एरर।");
+        }
+    } catch (error) {
+        console.error("डेटा फ़ेच नेटवर्क त्रुटि:", error);
+    }
+}
+
+function updateSlotData() {
+    if (!newsData || newsData.length === 0) {
+        slotTimeout = setTimeout(updateSlotData, 3000); 
+        return;
+    }
+
+    if (newsIndex >= newsData.length) newsIndex = 0; 
+    const currentSlot = newsData[newsIndex];
+    
+    if (!currentSlot) {
+        newsIndex = (newsIndex + 1) % newsData.length;
+        slotTimeout = setTimeout(updateSlotData, 500);
+        return;
+    }
+
+    const photoImg = document.getElementById("news-photo");
+    if (currentSlot.image && String(currentSlot.image).trim() !== "") {
+        const tempImg = new Image();
+        tempImg.src = currentSlot.image;
+        tempImg.onload = () => {
+            photoImg.src = tempImg.src;
+            photoImg.style.opacity = 1;
+        };
+    } else {
+        photoImg.style.opacity = 0; 
+    }
+
+    // 📌 100% गारंटीड Bottom_Footer एक्सट्रैक्शन लॉजिक
+    let rawFooter = "";
+    for (let key in currentSlot) {
+        // यह regex हर प्रकार के स्पेस, अंडरस्कोर और डैश को हटा देगा
+        let cleanKey = key.toString().toLowerCase().replace(/[^a-z0-9]/g, '');
+        // अब भले ही शीट में 'Bottom_Footer' हो या 'Bottom Footer', वह 'bottomfooter' बन जाएगा
+        if (cleanKey === "bottomfooter" || cleanKey === "footer") {
+            rawFooter = currentSlot[key];
+            break;
+        }
+    }
+    
+    const footerData = rawFooter ? String(rawFooter).trim() : "";
+    const captionBox = document.getElementById("image-caption-box");
+    const captionName = document.getElementById("caption-name");
+    const captionPost = document.getElementById("caption-post");
+    
+    // अगर डेटा उपलब्ध है
+    if (footerData !== "" && footerData.toLowerCase() !== "undefined" && footerData.toLowerCase() !== "null") {
+        let nameText = "";
+        let postText = "";
+        
+        // स्मार्ट स्प्लिटर: न्यू लाइन, डैश या कौमा से नाम और पद अलग करें
+        if (footerData.includes("\n")) {
+            let parts = footerData.split(/\r?\n/).filter(l => l.trim() !== "");
+            nameText = parts[0] || "";
+            postText = parts.slice(1).join(" ") || "";
+        } else if (footerData.includes("-")) {
+            let parts = footerData.split("-");
+            nameText = parts[0] || "";
+            postText = parts.slice(1).join("-") || "";
+        } else if (footerData.includes(",")) {
+            let parts = footerData.split(",");
+            nameText = parts[0] || "";
+            postText = parts.slice(1).join(",") || "";
+        } else {
+            // अगर एक ही लाइन हो तो पूरा नाम में
+            nameText = footerData; 
+        }
+
+        captionName.innerText = nameText.trim();
+        captionPost.innerText = postText.trim();
+        
+        // बॉक्स को 100% दिखाएँ
+        captionBox.style.display = "flex";
+        setTimeout(() => { captionBox.style.opacity = "1"; }, 50); 
+    } else {
+        // डेटा न होने पर बॉक्स को पूरी तरह हटा दें
+        captionBox.style.opacity = "0";
+        setTimeout(() => { captionBox.style.display = "none"; }, 400); 
+        captionName.innerText = "";
+        captionPost.innerText = "";
+    }
+
+    // --- टिकर टेक्स्ट लॉजिक ---
+    const rawText = String(currentSlot.text || "कोई खबर दर्ज नहीं है").trim();
+    const ticker = document.getElementById("ticker");
+    let lines = [];
+    
+    if (rawText.includes("\n")) {
+        lines = rawText.split("\n").filter(l => l.trim() !== "");
+    } else {
+        let words = rawText.split(" ");
+        let wordsPerLine = 3; 
+        for (let i = 0; i < words.length; i += wordsPerLine) {
+            lines.push(words.slice(i, i + wordsPerLine).join(" "));
+        }
+    }
+
+    const line1 = lines[0] || ""; 
+    const line2 = lines[1] || ""; 
+
+    const topContainer = document.getElementById("dynamic-header");
+    const bottomContainer = document.getElementById("dynamic-footer");
+
+    const currentTopAnim = topAnims[newsIndex % topAnims.length];
+    const currentBotAnim = botAnims[(newsIndex + 1) % botAnims.length]; 
+
+    topContainer.innerHTML = "BIG BREAKING".split(" ").map((word, i) => 
+        `<span class="word-anim ${currentTopAnim}" style="animation-delay: ${i * 0.25}s">${word}</span>`
+    ).join("");
+
+    if (window.topHeaderTimer) clearTimeout(window.topHeaderTimer);
+    window.topHeaderTimer = setTimeout(() => {
+        const line1TopAnim = topAnims[(newsIndex + 2) % topAnims.length];
+        topContainer.innerHTML = line1.split(" ").map((word, i) => 
+            `<span class="word-anim ${line1TopAnim}" style="animation-delay: ${i * 0.25}s">${word}</span>`
+        ).join("");
+    }, 3250);
+
+    bottomContainer.innerHTML = line2.split(" ").map((word, i) => 
+        `<span class="word-anim ${currentBotAnim}" style="animation-delay: ${i * 0.25}s">${word}</span>`
+    ).join("");
+
+    if (window.centerTimers) {
+        window.centerTimers.forEach(t => clearTimeout(t));
+    }
+    window.centerTimers = [];
+    ticker.innerHTML = ""; 
+    
+    const displayDuration = 3500; 
+    const totalCenterTime = lines.length * displayDuration; 
+    const animStyles = ['anim-style-1', 'anim-style-2', 'anim-style-3'];
+
+    lines.forEach((line, index) => {
+        let timer = setTimeout(() => {
+            const span = document.createElement('span');
+            const selectedAnim = animStyles[index % animStyles.length];
+            span.className = `single-line-anim ${selectedAnim}`; 
+            span.innerText = line;
+            ticker.appendChild(span);
+
+            setTimeout(() => {
+                span.className = 'single-line-anim zoomOut';
+                setTimeout(() => {
+                    if (span.parentNode) span.parentNode.removeChild(span);
+                }, 1000); 
+            }, displayDuration - 1100);
+
+        }, index * displayDuration);
+        window.centerTimers.push(timer);
+    });
+
+    newsIndex = (newsIndex + 1) % newsData.length;
+
+    if (slotTimeout) clearTimeout(slotTimeout);
+    slotTimeout = setTimeout(updateSlotData, totalCenterTime + 500);
+}
+
+async function startApp() {
+    await fetchSheetData(); 
+    updateSlotData(); 
+    setInterval(fetchSheetData, 3000); 
+}
+
+startApp();
+</script>
+</body>
+</html>
