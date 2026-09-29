@@ -2,6 +2,8 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
+<!-- मोबाइल और PC दोनों पर ऑटो-फिट के लिए व्यूपोर्ट -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ultimate Dausa Live News - Overlay</title>
 <style>
     :root {
@@ -24,6 +26,7 @@
         overflow: hidden;
     }
 
+    /* 🔥 PC और मोबाइल दोनों के लिए रेस्पॉन्सिव 1280x720 कंटेनर */
     .main-container {
         width: 1280px;
         height: 720px;
@@ -35,6 +38,10 @@
         display: flex;
         flex-direction: column;
         overflow: hidden; 
+        
+        /* स्क्रीन साइज़ के अनुसार ऑटो-स्केल */
+        transform: scale(min(calc(100vw / 1280), calc(100vh / 720)));
+        transform-origin: center center;
     }
 
     /* 🔥 TOP & BOTTOM BANNERS */
@@ -200,18 +207,19 @@
         z-index: 1;
     }
 
-    .photo-frame img.dynamic-news-img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain; 
-        object-position: center; 
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 2;
-        transition: opacity 0.5s ease-in-out;
-        opacity: 0;
-    }
+    /* 🔥 गूगल शीट की फोटो को पूरे फ्रेम में अधिकतम सेट करने के लिए फिक्स */
+   .photo-frame img.dynamic-news-img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;         /* ना ऊपर-नीचे खाली जगह रहेगी, ना बाएं-दाएं से फोटो कटेगी */
+    object-position: center;  /* फोटो फ्रेम में बिल्कुल बीचों-बीच सेट रहेगी */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+}
 
     /* 📌 पक्का फोटो कैप्शन (Bottom Footer) बॉक्स */
     .image-caption-box {
@@ -221,20 +229,19 @@
         width: 100%;
         min-height: 90px;
         background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 60%, transparent 100%);
-        /* Display None डिफ़ॉल्ट रखा गया है ताकि खाली होने पर गायब रहे */
         display: none; 
         flex-direction: column;
         justify-content: flex-end;
         align-items: center;
         padding: 40px 10px 15px 10px;
-        z-index: 99999; /* Z-INDEX सर्वोच्च प्राथमिकता पर सेट है */
+        z-index: 99999; 
         transition: opacity 0.4s ease-in-out;
         opacity: 0; 
     }
 
     .caption-name {
         color: #ffffff;
-        font-size: 30px; /* नाम का साइज स्पष्ट किया गया है */
+        font-size: 30px; 
         font-weight: 900;
         text-shadow: 2px 2px 5px #000000, 0 0 10px rgba(255,255,255,0.4);
         margin: 0;
@@ -246,7 +253,7 @@
 
     .caption-post {
         color: var(--gold);
-        font-size: 24px; /* पद का साइज स्पष्ट किया गया है */
+        font-size: 24px; 
         font-weight: 700;
         text-shadow: 2px 2px 5px #000000, 0 0 10px rgba(255, 204, 0, 0.4);
         margin: 0;
@@ -282,7 +289,7 @@
     .single-line-anim {
         position: absolute;
         width: 100%;
-        font-size: 82px; 
+        font-size: 80px; 
         font-weight: 900;
         line-height: 1.6; 
         margin: 0;
@@ -406,12 +413,9 @@ function updateSlotData() {
         photoImg.style.opacity = 0; 
     }
 
-    // 📌 100% गारंटीड Bottom_Footer एक्सट्रैक्शन लॉजिक
     let rawFooter = "";
     for (let key in currentSlot) {
-        // यह regex हर प्रकार के स्पेस, अंडरस्कोर और डैश को हटा देगा
         let cleanKey = key.toString().toLowerCase().replace(/[^a-z0-9]/g, '');
-        // अब भले ही शीट में 'Bottom_Footer' हो या 'Bottom Footer', वह 'bottomfooter' बन जाएगा
         if (cleanKey === "bottomfooter" || cleanKey === "footer") {
             rawFooter = currentSlot[key];
             break;
@@ -423,12 +427,10 @@ function updateSlotData() {
     const captionName = document.getElementById("caption-name");
     const captionPost = document.getElementById("caption-post");
     
-    // अगर डेटा उपलब्ध है
     if (footerData !== "" && footerData.toLowerCase() !== "undefined" && footerData.toLowerCase() !== "null") {
         let nameText = "";
         let postText = "";
         
-        // स्मार्ट स्प्लिटर: न्यू लाइन, डैश या कौमा से नाम और पद अलग करें
         if (footerData.includes("\n")) {
             let parts = footerData.split(/\r?\n/).filter(l => l.trim() !== "");
             nameText = parts[0] || "";
@@ -442,25 +444,21 @@ function updateSlotData() {
             nameText = parts[0] || "";
             postText = parts.slice(1).join(",") || "";
         } else {
-            // अगर एक ही लाइन हो तो पूरा नाम में
             nameText = footerData; 
         }
 
         captionName.innerText = nameText.trim();
         captionPost.innerText = postText.trim();
         
-        // बॉक्स को 100% दिखाएँ
         captionBox.style.display = "flex";
         setTimeout(() => { captionBox.style.opacity = "1"; }, 50); 
     } else {
-        // डेटा न होने पर बॉक्स को पूरी तरह हटा दें
         captionBox.style.opacity = "0";
         setTimeout(() => { captionBox.style.display = "none"; }, 400); 
         captionName.innerText = "";
         captionPost.innerText = "";
     }
 
-    // --- टिकर टेक्स्ट लॉजिक ---
     const rawText = String(currentSlot.text || "कोई खबर दर्ज नहीं है").trim();
     const ticker = document.getElementById("ticker");
     let lines = [];
